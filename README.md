@@ -44,7 +44,7 @@ terraform apply
 ```
 
 ---
-**David - TFG Bytemind-IaC (2026)**
+**David Arbelaez Mutis - TFG Bytemind-IaC (2026)**
 *"Automatizando la educación, asegurando el mañana."*
 
 ![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)
