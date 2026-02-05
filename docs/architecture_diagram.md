@@ -61,6 +61,24 @@ graph TB
     class RDS,EFS storage;
 ```
 
+---
+
+## 🚀 Evolución: Del Monolito a la Descentralización
+
+Un punto clave del TFG es la transición desde un despliegue tradicional hacia uno de grado empresarial.
+
+### 🔴 Antes: Arquitectura Monolítica (Standard Moodle)
+En un despliegue básico, todos los componentes conviven en un único servidor:
+- **Punto Único de Fallo:** Si la instancia EC2 falla, todo el sistema cae.
+- **Escalabilidad Nula:** Para crecer, hay que aumentar el tamaño de la máquina (Escalado Vertical), lo cual es costoso y requiere tiempo de inactividad.
+- **Riesgo de Datos:** La base de datos y los archivos están dentro del servidor; si el disco se corrompe, los datos se pierden.
+
+### 🟢 Después: Arquitectura Bytemind HA (Descentralizada)
+Nuestra solución desacopla las responsabilidades para maximizar la resiliencia:
+- **Cómputo Inmutable:** Las instancias EC2 son efímeras. Si una muere, el ASG lanza otra idéntica automáticamente.
+- **Persistencia Externa:** Los datos viven en servicios gestionados (**RDS** y **EFS**) inmunes a fallos de los servidores de aplicaciones.
+- **Alta Disponibilidad:** Tráfico distribuido por el **ALB** entre múltiples centros de datos (AZ).
+
 ## 🛠️ Especificaciones de la Infraestructura
 | Componente | Capa | Resiliencia | Notas de TFG |
 | :--- | :--- | :--- | :--- |

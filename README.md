@@ -5,12 +5,15 @@
 ![Moodle](https://img.shields.io/badge/Moodle-F98012?style=for-the-badge&logo=moodle&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 
-**Proyecto Fin de Grado (TFG)** centrado en la automatización de infraestructura crítica. Bytemind-IaC despliega un entorno Moodle resiliente, auto-curativo y optimizado en costes (FinOps) utilizando **Infrastructure as Code (IaC)**.
+**Proyecto Fin de Grado (TFG)** centrado en la evolución de infraestructuras: transformando un despliegue **Moodle Monolítico** tradicional en una arquitectura **descentralizada, resiliente y escalable** en la nube de AWS mediante Infrastructure as Code (IaC).
 
 ---
 
-## 🏛️ Arquitectura de Ingeniería (Visual Showcase)
-La arquitectura está diseñada bajo los principios de **Well-Architected Framework** de AWS, garantizando disponibilidad inmediata y persistencia desacoplada.
+## 🏛️ Evolución de la Ingeniería: Monolito vs Alta Disponibilidad
+El valor principal de este proyecto es el salto tecnológico desde un servidor único ("Todo en uno") hacia una arquitectura de grado empresarial:
+
+- **Infraestructura Monolítica:** Un punto único de fallo, escalado vertical costoso y riesgo de pérdida de datos.
+- **Bytemind HA (Descentralizada):** Cómputo inmutable, capas de persistencia externas (RDS/EFS) y auto-curación distribuida en múltiples zonas de disponibilidad.
 
 ![Arquitectura de Sistemas](docs/diagrams/moodle_ha_final_architecture.png)
 
