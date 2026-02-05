@@ -9,18 +9,18 @@
 
 ---
 
-## 🏛️ Evolución de la Ingeniería: Monolito vs Alta Disponibilidad
-El valor principal de este proyecto es el salto tecnológico desde un servidor único ("Todo en uno") hacia una arquitectura de grado empresarial:
+## 🏛️ Evolución de la Ingeniería: Comparativa de Arquitecturas
+Este proyecto demuestra el salto tecnológico desde un despliegue básico hacia una infraestructura de grado empresarial bajo el marco de **Well-Architected Framework** de AWS.
 
-### 🔴 Antes: Arquitectura Monolítica (Concepto)
-*Un solo servidor para todo. Si cae la instancia, cae el servicio y se pierden los datos locales.*
+### 🔴 Punto de Partida: Arquitectura Base
+*Conceptualización de un entorno tradicional con dependencias locales y punto único de fallo.*
 
-<img src="docs/diagrams/moodle_monolith_concept.png" alt="Arquitectura Monolítica" width="800">
+<img src="docs/diagrams/moodle_monolith_concept.png" alt="Arquitectura Base Conceptual" width="800">
 
-### 🟢 Después: Bytemind HA (Descentralizada)
-*Infraestructura auto-curativa distribuida en múltiples zonas, con persistencia desacoplada.*
+### 🟢 Estado Final: Arquitectura Bytemind HA (Alta Disponibilidad)
+*Infraestructura auto-curativa distribuida en múltiples zonas (Multi-AZ), con persistencia desacoplada (RDS/EFS).*
 
-<img src="docs/diagrams/moodle_ha_final_architecture.png" alt="Arquitectura Bytemind HA" width="800">
+<img src="docs/diagrams/moodle_ha_final_architecture.png" alt="Arquitectura Final HA" width="800">
 
 ---
 
@@ -52,4 +52,4 @@ terraform apply
 **David Arbelaez Mutis - TFG Bytemind-IaC (2026)**
 *"Automatizando la educación, asegurando el mañana."*
 
-![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)
+<img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">

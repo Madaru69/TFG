@@ -5,21 +5,21 @@ Este documento contiene las visualizaciones de alta fidelidad nivel "Ingeniero A
 ## 🏛️ Esquema de Red y Sistemas (High-Fidelity)
 Esta imagen representa la topología completa validada, incluyendo las zonas de disponibilidad separadas y los componentes de red críticos.
 
-![Arquitectura Final Moodle HA](diagrams/moodle_ha_final_architecture.png)
+<img src="diagrams/moodle_ha_final_architecture.png" alt="Arquitectura Final Moodle HA" width="800">
 
 ---
 
 ## 🏗️ Diagrama de Ingeniería Detallado
 Visualización centrada en el flujo de datos y la interconexión de servicios gestionados (ALB, RDS, EFS).
 
-![Diagrama de Ingeniería V2](diagrams/aws_engineering_diagram_v2.png)
+<img src="diagrams/aws_engineering_diagram_v2.png" alt="Diagrama de Ingeniería V2" width="800">
 
 ---
 
 ## 🛡️ Topología de Resiliencia (Pro)
 Vista isométrica de la infraestructura Multi-AZ diseñada para el proyecto Bytemind-IaC.
 
-![Arquitectura Moodle Pro](diagrams/moodle_ha_pro_visual.png)
+<img src="diagrams/moodle_ha_pro_visual.png" alt="Arquitectura Moodle Pro" width="800">
 
 ---
 > [!NOTE]
