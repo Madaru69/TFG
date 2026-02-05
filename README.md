@@ -1,66 +1,28 @@
-# Infraestructura Cloud de Alta Disponibilidad para Moodle en AWS
+# Bytemind-IaC: Despliegue de Moodle en AWS con Alta Disponibilidad 🚀🛡️
 
-**Autor:** David Arbelaez Mutis  
-**Proyecto:** TFG - Administración de Sistemas Informáticos en Red (ASIR)
+Proyecto Fin de Grado (TFG) centrado en la automatización de infraestructura como código (IaC) para un entorno educativo resiliente y escalable.
 
-## 1. Contexto y Justificación Social
+## 📁 Estructura del Repositorio
+Para garantizar la máxima claridad académica y técnica, el repositorio se ha organizado de la siguiente manera:
 
-En el panorama educativo actual, la disponibilidad de las plataformas LMS (*Learning Management Systems*) como Moodle es crítica. No se trata solo de tecnología; una caída del servicio en época de exámenes afecta directamente al progreso académico de los estudiantes y a la equidad en el acceso a la educación.
+*   **Raíz (`/`):** Contiene el código Terraform **final y validado (V18)**. Esta versión incluye el parche de desbloqueo de IP y la configuración de Alta Disponibilidad.
+*   **`docs/`:** Documentación técnica y visual.
+    *   `architecture_diagram.md`: Esquema detallado de la red y sistemas.
+    *   `architecture_visuals.md`: Galería de imágenes en alta fidelidad.
+    *   `diagrams/`: Archivos de imagen originales.
+*   **`archive/`:** Historial de versiones previas, backups y estados de terraform antiguos para trazabilidad del desarrollo.
 
-Este proyecto aborda la modernización de una infraestructura "monolítica" hacia una arquitectura **Cloud Native** en AWS, diseñada para ser resiliente, elástica y eficiente en costes.
+## 🏛️ Arquitectura Destacada (High Availability)
+El sistema está diseñado para sobrevivir a fallos de centros de datos mediante:
+- **Multi-AZ Deployment:** Instancias repartidas en `eu-south-2a` y `eu-south-2b`.
+- **Auto-Healing:** Recuperación automática de nodos mediante AWS Auto Scaling.
+- **Persistencia Desacoplada:** Amazon RDS para bases de datos y Amazon EFS para archivos.
 
-## 2. Metodología: Del Monolito a la Nube
-
-Se plantea un enfoque iterativo basado en **Insumos** (Requisitos de Moodle), **Procesamiento** (Codificación en Terraform) y **Salidas** (Infraestructura Desplegada).
-
-### 2.1 Insumos y Tecnologías
-*   **Terraform (IaC):** Para garantizar la replicabilidad y eliminar la gestión manual ("ClickOps").
-*   **AWS (Región España `eu-south-2`):** Para minimizar latencia y cumplir con soberanía de datos.
-*   **FinOps:** Estrategia de etiquetado y selección de recursos (`t3.micro`) para optimizar el presupuesto del laboratorio.
-
-### 2.2 Arquitectura Propuesta (Salida Gráfica)
-El diseño implementa una topología de tres capas con **Alta Disponibilidad (HA)**:
-1.  **Capa de Presentación:** Application Load Balancer (ALB) público.
-2.  **Capa de Computación:** Auto Scaling Group (ASG) distribuido en Zonas A y B.
-3.  **Capa de Datos:** Amazon RDS (Base de datos) y Amazon EFS (Archivos) desacoplados.
-
-## 3. Guía de Despliegue
-
-Sigue estos pasos para levantar el entorno en tu cuenta de AWS.
-
-### Requisitos Previos
-*   AWS CLI configurado.
-*   Terraform instalado.
-*   Par de claves SSH (`tfg-key.pem`) en el directorio raíz.
-
-### Procedimiento
-1.  **Inicializar Terraform:**
-    ```bash
-    terraform init
-    ```
-2.  **Validar Planificación:**
-    Se recomienda revisar el plan de ejecución para detectar posibles conflictos.
-    ```bash
-    terraform plan
-    ```
-3.  **Despliegue (Apply):**
-    ```bash
-    terraform apply -auto-approve
-    ```
-
-> [!NOTE]
-> El tiempo estimado de aprovisionamiento es de 5 a 10 minutos. El *User Data* se encargará de montar el EFS automáticamente.
-
-4.  **Verificación:**
-    Obtén la URL del Balanceador de Carga desde las salidas de Terraform y accede desde tu navegador:
-    ```bash
-    terraform output alb_dns_name
-    ```
-
-## 4. Pruebas de Resiliencia ("Chaos Monkey")
-
-Para validar que la arquitectura cumple con su objetivo de soportar fallos sin interrumpir el servicio educativo, consulta la guía de pruebas:
-[>> Ir a Guía de Pruebas de Caos (El Exterminador)](./chaos_testing.md)
+## 🚀 Cómo Desplegar
+1.  Asegúrate de tener configuradas tus credenciales de AWS.
+2.  `terraform init`
+3.  `terraform apply`
 
 ---
-*Este proyecto es un esfuerzo académico para demostrar cómo la ingeniería de sistemas puede resolver problemas reales de accesibilidad y estabilidad en entornos formativos.*
+**David - TFG Bytemind-IaC (2026)**
+"Automatizando el aprendizaje, securizando el futuro."
