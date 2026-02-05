@@ -1,11 +1,9 @@
-# --- outputs.tf ---
-
-output "alb_dns_name" {
-  description = "URL publica del Balanceador de Carga (Entrada a Moodle)"
-  value       = aws_lb.app_alb.dns_name
+output "moodle_url" {
+  description = "Enlace directo para acceder a Moodle"
+  value       = "http://${aws_lb.app_alb.dns_name}"
 }
 
-output "rds_endpoint" {
-  description = "Endpoint de la base de datos (para configurar Moodle)"
-  value       = aws_db_instance.moodle_db.address
+output "efs_id" {
+  description = "ID del Sistema de Archivos EFS para referencia"
+  value       = aws_efs_file_system.moodle_efs.id
 }
