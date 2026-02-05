@@ -110,9 +110,9 @@ resource "aws_launch_template" "moodle_lt" {
 # 2. Grupo de Auto-Escalado (El gestor de la flota)
 resource "aws_autoscaling_group" "moodle_asg" {
   name                = "${var.project_name}-ASG"
-  desired_capacity    = 1
-  max_size            = 2
-  min_size            = 1
+  desired_capacity    = 2
+  max_size            = 4
+  min_size            = 2
   vpc_zone_identifier = [aws_subnet.public_subnet_a.id, aws_subnet.public_subnet_b.id]
   target_group_arns   = [aws_lb_target_group.alb_tg.arn]
 
@@ -121,11 +121,11 @@ resource "aws_autoscaling_group" "moodle_asg" {
     version = "$Latest"
   }
 
-  # ESTRATEGIA DE ROTACIÓN
+  # ESTRATEGIA DE ROTACIÓN (PHASE 3 - HA)
   instance_refresh {
     strategy = "Rolling"
     preferences {
-      min_healthy_percentage = 0
+      min_healthy_percentage = 50
     }
   }
 
@@ -135,6 +135,12 @@ resource "aws_autoscaling_group" "moodle_asg" {
   tag {
     key                 = "Name"
     value               = "${var.project_name}-ASG-Server"
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Phase"
+    value               = "3-HighAvailability"
     propagate_at_launch = true
   }
 
