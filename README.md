@@ -9,18 +9,31 @@
 
 ---
 
-## 🏛️ Evolución de la Ingeniería: Comparativa de Arquitecturas
-Este proyecto demuestra el salto tecnológico desde un despliegue básico hacia una infraestructura de grado empresarial bajo el marco de **Well-Architected Framework** de AWS.
+## 🏛️ Evolución de la Ingeniería: Del Monolito a la Alta Disponibilidad
+El valor diferencial de este TFG es la transición técnica desde un modelo frágil hacia uno de alta resiliencia.
 
-### 🔴 Punto de Partida: Arquitectura Base
-*Conceptualización de un entorno tradicional con dependencias locales y punto único de fallo.*
+### 🔴 Antes: Arquitectura Monolítica (Standard Moodle)
+*Infraestructura básica con punto único de fallo. Todos los servicios conviven en el mismo servidor (EC2).*
 
-<img src="docs/diagrams/moodle_monolith_concept.png" alt="Arquitectura Base Conceptual" width="800">
+```mermaid
+graph LR
+    User[Estudiante] -- "Internet" --> IGW[Internet Gateway]
+    IGW --> EC2[("Servidor Moodle (All-in-One)<br/>Apache + PHP + MySQL + Archivos")]
+    classDef red fill:#ffcdd2,stroke:#c62828,stroke-width:2px;
+    class EC2 red;
+```
 
-### 🟢 Estado Final: Arquitectura Bytemind HA (Alta Disponibilidad)
-*Infraestructura auto-curativa distribuida en múltiples zonas (Multi-AZ), con persistencia desacoplada (RDS/EFS).*
+### 🟢 Después: Arquitectura Bytemind HA (Bytemind-IaC Design)
+*Propuesta de grado empresarial con capas desacopladas y redundancia total.*
 
-<img src="docs/diagrams/moodle_ha_final_architecture.png" alt="Arquitectura Final HA" width="800">
+<img src="docs/diagrams/moodle_ha_professional.png" alt="Arquitectura Bytemind HA" width="800">
+
+---
+
+## 🏗️ Showcase: Arquitectura de Ingeniería Validada
+*Diagrama técnico final detallado, validado mediante Chaos Engineering y pruebas de carga.*
+
+<img src="docs/diagrams/moodle_ha_final_architecture.png" alt="Arquitectura Ingeniería Detallada" width="800">
 
 ---
 
