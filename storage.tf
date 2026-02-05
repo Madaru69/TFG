@@ -1,89 +1,54 @@
-# --- storage.tf (Corregido con los nuevos nombres de Security Groups) ---
+# --- storage.tf (Persistencia) ---
 
-# --- SECCIÓN 1: Base de Datos (RDS) ---
-
-# 1. Grupo de Subredes para RDS (Le dice a RDS qué subredes privadas puede usar)
-resource "aws_db_subnet_group" "moodle_db_subnet_group" {
-  name       = "${var.project_name}-db-subnet-group"
-  # RDS necesita al menos dos subredes en distintas zonas para alta disponibilidad
-  subnet_ids = [aws_subnet.private_subnet.id, aws_subnet.private_subnet_b.id]
-
-  tags = {
-    Name = "Moodle DB Subnet Group"
-  }
+# --- EFS (Archivos) ---
+resource "aws_efs_file_system" "moodle_efs" {
+  creation_token = "${var.project_name}-efs"
+  encrypted      = true
+  tags           = { Name = "${var.project_name}-efs" }
 }
 
-# 2. La Instancia de Base de Datos (MySQL)
+resource "aws_efs_mount_target" "efs_mt_a" {
+  file_system_id  = aws_efs_file_system.moodle_efs.id
+  subnet_id       = aws_subnet.private_subnet_a.id # Montaje en Zona A
+  security_groups = [aws_security_group.efs_sg.id]
+}
+
+resource "aws_efs_mount_target" "efs_mt_b" {
+  file_system_id  = aws_efs_file_system.moodle_efs.id
+  subnet_id       = aws_subnet.private_subnet_b.id # Montaje en Zona B
+  security_groups = [aws_security_group.efs_sg.id]
+}
+
+# --- RDS (Base de Datos) ---
+resource "aws_db_subnet_group" "moodle_db_sg" {
+  name       = "${var.project_name}-db-subnet-group"
+  subnet_ids = [aws_subnet.private_subnet_a.id, aws_subnet.private_subnet_b.id]
+}
+
 resource "aws_db_instance" "moodle_db" {
-  allocated_storage      = 20           # 20 GB de espacio
-  db_name                = var.db_name  # Nombre de la BD dentro de MySQL (ej: moodle)
+  allocated_storage      = 20
+  db_name                = var.db_name
   engine                 = "mysql"
-  engine_version         = "8.0"        # Versión compatible con Moodle
-  instance_class         = "db.t3.micro" # Tamaño del servidor (el más barato)
+  engine_version         = "8.0"
+  instance_class         = "db.t3.micro"
   username               = var.db_username
   password               = var.db_password
   parameter_group_name   = "default.mysql8.0"
-  skip_final_snapshot    = true         # Para el lab, borramos sin copia de seguridad final
-  db_subnet_group_name   = aws_db_subnet_group.moodle_db_subnet_group.name
-  
-  # [NOTA FINOPS] En un entorno de Producción real, este valor DEBE ser 'true'.
-  # Se mantiene en 'false' para el laboratorio académico debido al coste (aprox. x2).
-  multi_az               = false 
-  
-  # [CORRECCIÓN AQUÍ] Usamos el nombre nuevo del SG específico para RDS
+  skip_final_snapshot    = true
+  db_subnet_group_name   = aws_db_subnet_group.moodle_db_sg.name
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
 
-  tags = {
-    Name = "${var.project_name}-RDS"
-  }
+  tags = { Name = "${var.project_name}-rds" }
 }
 
-
-# --- SECCIÓN 2: Almacenamiento de Archivos Compartido (EFS) ---
-
-# 3. El Sistema de Archivos EFS (El "disco duro" en la nube)
-resource "aws_efs_file_system" "moodle_efs" {
-  creation_token = "${var.project_name}-EFS"
-  encrypted      = true # Cifrado por seguridad
-
-  tags = {
-    Name = "${var.project_name}-EFS"
-  }
-}
-
-# 4. Puntos de Montaje (Mount Targets)
-# Son los "enchufes" de red en las subredes privadas donde conectaremos el disco.
-# Necesitamos uno en cada zona de disponibilidad donde haya servidores.
-
-# Mount Target en la Subred Privada A
-resource "aws_efs_mount_target" "efs_mt_a" {
-  file_system_id  = aws_efs_file_system.moodle_efs.id
-  subnet_id       = aws_subnet.private_subnet.id
-  
-  # [CORRECCIÓN AQUÍ] Usamos el nombre nuevo del SG específico para EFS
-  security_groups = [aws_security_group.efs_sg.id]
-}
-
-# Mount Target en la Subred Privada B (Para alta disponibilidad)
-resource "aws_efs_mount_target" "efs_mt_b" {
-  file_system_id  = aws_efs_file_system.moodle_efs.id
-  subnet_id       = aws_subnet.private_subnet_b.id
-  
-  # [CORRECCIÓN AQUÍ] Usamos el nombre nuevo del SG específico para EFS
-  security_groups = [aws_security_group.efs_sg.id]
-}
-
-# --- [NUEVO: ESTÁNDAR PROFESIONAL] ---
-# 5. Access Point para Moodle
-# Esto soluciona de raíz los problemas de permisos (dataroot is not writable).
-# Forzamos que cualquier archivo escrito use el UID/GID de www-data (33).
+# --- [BYTEMIND SRE] Access Point para Moodle ---
+# Esto garantiza que cualquier archivo en EFS sea propiedad de www-data (UID 33)
 resource "aws_efs_access_point" "moodle_ap" {
   file_system_id = aws_efs_file_system.moodle_efs.id
 
-  # Forzamos los permisos al nivel de red
   posix_user {
-    gid = 33 # GID de www-data en Ubuntu/Debian
-    uid = 33 # UID de www-data
+    gid = 33 
+    uid = 33 
   }
 
   root_directory {
@@ -96,6 +61,6 @@ resource "aws_efs_access_point" "moodle_ap" {
   }
 
   tags = {
-    Name = "${var.project_name}-EFS-AccessPoint"
+    Name = "${var.project_name}-efs-ap"
   }
 }
