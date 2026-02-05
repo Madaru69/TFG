@@ -1,28 +1,47 @@
-# Bytemind-IaC: Despliegue de Moodle en AWS con Alta Disponibilidad 🚀🛡️
+# Bytemind-IaC: Moodle High Availability on AWS 🚀🛡️
 
-Proyecto Fin de Grado (TFG) centrado en la automatización de infraestructura como código (IaC) para un entorno educativo resiliente y escalable.
+![Terraform](https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)
+![Moodle](https://img.shields.io/badge/Moodle-F98012?style=for-the-badge&logo=moodle&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 
-## 📁 Estructura del Repositorio
-Para garantizar la máxima claridad académica y técnica, el repositorio se ha organizado de la siguiente manera:
+**Proyecto Fin de Grado (TFG)** centrado en la automatización de infraestructura crítica. Bytemind-IaC despliega un entorno Moodle resiliente, auto-curativo y optimizado en costes (FinOps) utilizando **Infrastructure as Code (IaC)**.
 
-*   **Raíz (`/`):** Contiene el código Terraform **final y validado (V18)**. Esta versión incluye el parche de desbloqueo de IP y la configuración de Alta Disponibilidad.
-*   **`docs/`:** Documentación técnica y visual.
-    *   `architecture_diagram.md`: Esquema detallado de la red y sistemas.
-    *   `architecture_visuals.md`: Galería de imágenes en alta fidelidad.
-    *   `diagrams/`: Archivos de imagen originales.
-*   **`archive/`:** Historial de versiones previas, backups y estados de terraform antiguos para trazabilidad del desarrollo.
+---
 
-## 🏛️ Arquitectura Destacada (High Availability)
-El sistema está diseñado para sobrevivir a fallos de centros de datos mediante:
-- **Multi-AZ Deployment:** Instancias repartidas en `eu-south-2a` y `eu-south-2b`.
-- **Auto-Healing:** Recuperación automática de nodos mediante AWS Auto Scaling.
-- **Persistencia Desacoplada:** Amazon RDS para bases de datos y Amazon EFS para archivos.
+## 🏛️ Arquitectura de Ingeniería (Visual Showcase)
+La arquitectura está diseñada bajo los principios de **Well-Architected Framework** de AWS, garantizando disponibilidad inmediata y persistencia desacoplada.
 
-## 🚀 Cómo Desplegar
-1.  Asegúrate de tener configuradas tus credenciales de AWS.
-2.  `terraform init`
-3.  `terraform apply`
+![Arquitectura de Sistemas](docs/diagrams/moodle_ha_final_architecture.png)
+
+---
+
+## 🛠️ Retos Técnicos y Soluciones
+Para este TFG, se resolvieron problemas reales de nivel empresarial:
+
+| Reto Técnico | Solución Implementada | Habilidad Demostrada |
+| :--- | :--- | :--- |
+| **Alta Disponibilidad** | Despliegue Multi-AZ con Auto Scaling y ALB. | Arquitectura en la Nube |
+| **Persistencia** | Desacoplamiento de datos con RDS y archivos con EFS. | Gestión de Datos |
+| **Resiliencia** | Simulación de fallos (Chaos Engineering) con recuperación automática. | SRE / DevOps |
+| **FinOps** | Infraestructura efímera mediante despliegues dinámicos y destrucción de recursos. | Optimización de Costes |
+| **Automatización** | Configuración dinámica de Moodle (PHP) vía User Data y variables de Terraform. | Automatización IaC |
+
+---
+
+## 📂 Estructura del Proyecto
+*   **[`/`](./):** Código Terraform **Golden-Stable (V18)**.
+*   **[`docs/`](./docs/):** Memoria técnica, diagramas Mermaid y [galería de alta fidelidad](./docs/architecture_visuals.md).
+*   **[`archive/`](./archive/):** Trazabilidad completa del desarrollo (Backups e histórico).
+
+## 🚀 Despliegue Rápido
+```bash
+terraform init
+terraform apply
+```
 
 ---
 **David - TFG Bytemind-IaC (2026)**
-"Automatizando el aprendizaje, securizando el futuro."
+*"Automatizando la educación, asegurando el mañana."*
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/sharing/share-offsite/?url=https://github.com/Madaru69/TFG)
