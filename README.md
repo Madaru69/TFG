@@ -1,9 +1,9 @@
 # Bytemind-IaC: Moodle High Availability on AWS 🚀🛡️
 
-![Terraform](https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white)
-![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)
-![Moodle](https://img.shields.io/badge/Moodle-F98012?style=for-the-badge&logo=moodle&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+<img src="https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white" alt="Terraform">
+<img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white" alt="AWS">
+<img src="https://img.shields.io/badge/Moodle-F98012?style=for-the-badge&logo=moodle&logoColor=white" alt="Moodle">
+<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
 
 **Proyecto Fin de Grado (TFG)** centrado en la evolución de infraestructuras: transformando un despliegue **Moodle Monolítico** tradicional en una arquitectura **descentralizada, resiliente y escalable** en la nube de AWS mediante Infrastructure as Code (IaC).
 
@@ -12,10 +12,15 @@
 ## 🏛️ Evolución de la Ingeniería: Monolito vs Alta Disponibilidad
 El valor principal de este proyecto es el salto tecnológico desde un servidor único ("Todo en uno") hacia una arquitectura de grado empresarial:
 
-- **Infraestructura Monolítica:** Un punto único de fallo, escalado vertical costoso y riesgo de pérdida de datos.
-- **Bytemind HA (Descentralizada):** Cómputo inmutable, capas de persistencia externas (RDS/EFS) y auto-curación distribuida en múltiples zonas de disponibilidad.
+### 🔴 Antes: Arquitectura Monolítica (Concepto)
+*Un solo servidor para todo. Si cae la instancia, cae el servicio y se pierden los datos locales.*
 
-![Arquitectura de Sistemas](docs/diagrams/moodle_ha_final_architecture.png)
+<img src="docs/diagrams/moodle_monolith_concept.png" alt="Arquitectura Monolítica" width="800">
+
+### 🟢 Después: Bytemind HA (Descentralizada)
+*Infraestructura auto-curativa distribuida en múltiples zonas, con persistencia desacoplada.*
+
+<img src="docs/diagrams/moodle_ha_final_architecture.png" alt="Arquitectura Bytemind HA" width="800">
 
 ---
 
