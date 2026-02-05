@@ -49,8 +49,8 @@ graph TB
     EC2_A -- "SQL (3306)" --> RDS
     EC2_B -- "SQL (3306)" --> RDS
     
-    EC2_A -= "NFS v4.1 (2049)" =- EFS
-    EC2_B -= "NFS v4.1 (2049)" =- EFS
+    EC2_A -- "NFS v4.1 (2049)" --> EFS
+    EC2_B -- "NFS v4.1 (2049)" --> EFS
 
     Admin -- "SSM Session" --> EC2_A
     Admin -- "SSM Session" --> EC2_B
