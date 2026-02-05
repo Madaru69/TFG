@@ -72,3 +72,30 @@ resource "aws_efs_mount_target" "efs_mt_b" {
   # [CORRECCIÓN AQUÍ] Usamos el nombre nuevo del SG específico para EFS
   security_groups = [aws_security_group.efs_sg.id]
 }
+
+# --- [NUEVO: ESTÁNDAR PROFESIONAL] ---
+# 5. Access Point para Moodle
+# Esto soluciona de raíz los problemas de permisos (dataroot is not writable).
+# Forzamos que cualquier archivo escrito use el UID/GID de www-data (33).
+resource "aws_efs_access_point" "moodle_ap" {
+  file_system_id = aws_efs_file_system.moodle_efs.id
+
+  # Forzamos los permisos al nivel de red
+  posix_user {
+    gid = 33 # GID de www-data en Ubuntu/Debian
+    uid = 33 # UID de www-data
+  }
+
+  root_directory {
+    path = "/moodle_data"
+    creation_info {
+      owner_gid   = 33
+      owner_uid   = 33
+      permissions = "775"
+    }
+  }
+
+  tags = {
+    Name = "${var.project_name}-EFS-AccessPoint"
+  }
+}
