@@ -15,13 +15,7 @@ El valor diferencial de este TFG es la transición técnica desde un modelo frá
 ### 🔴 Antes: Arquitectura Monolítica (Standard Moodle)
 *Infraestructura básica con punto único de fallo. Todos los servicios conviven en el mismo servidor (EC2).*
 
-```mermaid
-graph LR
-    User[Estudiante] -- "Internet" --> IGW[Internet Gateway]
-    IGW --> EC2[("Servidor Moodle (All-in-One)<br/>Apache + PHP + MySQL + Archivos")]
-    classDef red fill:#ffcdd2,stroke:#c62828,stroke-width:2px;
-    class EC2 red;
-```
+<img src="docs/diagrams/moodle_monolith_traditional.png" alt="Arquitectura Monolítica Tradicional" width="800">
 
 ### 🟢 Después: Arquitectura Bytemind HA (Bytemind-IaC Design)
 *Propuesta de grado empresarial con capas desacopladas y redundancia total.*
