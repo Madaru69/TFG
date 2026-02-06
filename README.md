@@ -57,4 +57,6 @@ Una vez desplegado, el sistema genera automáticamente un **Moodle URL** (vía O
 **David Arbelaez Mutis - TFG Bytemind-IaC (2026)**
 *"Automatizando la educación, asegurando el mañana."*
 
-<img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
+<a href="https://www.linkedin.com/in/davidmutis/" target="_blank">
+  <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
+</a>
