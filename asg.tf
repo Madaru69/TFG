@@ -82,8 +82,10 @@ resource "aws_launch_template" "moodle_lt" {
                   ln -s $MOODLE_DATA $MOODLE_WEB_DIR/moodledata
               fi
               
-              chown -R www-data:www-data $MOODLE_DATA
-              chmod -R 777 $MOODLE_DATA
+              # [OPTIMIZATION] Avoid changing permissions recursively on EFS to prevent Boot Storms
+              # Just ensure the root mount point is owned by www-data
+              chown www-data:www-data $MOODLE_DATA
+              chmod 777 $MOODLE_DATA
               
               # 6. Purga de Caches (CRITICO)
               echo "--- [BYTEMIND] Purgando caches nucleares... ---"
