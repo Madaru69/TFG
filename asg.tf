@@ -164,3 +164,18 @@ resource "aws_autoscaling_policy" "moodle_cpu_policy" {
     target_value = 50.0 # Objetivo: Mantener el CPU al 50%. Si sube, escala.
   }
 }
+
+# 4. Política de Escalado por Tráfico (Peticiones al ALB)
+resource "aws_autoscaling_policy" "moodle_request_policy" {
+  name                   = "${var.project_name}-request-scaling-policy"
+  autoscaling_group_name = aws_autoscaling_group.moodle_asg.name
+  policy_type            = "TargetTrackingScaling"
+
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ALBRequestCountPerTarget"
+      resource_label         = "${aws_lb.app_alb.arn_suffix}/${aws_lb_target_group.alb_tg.arn_suffix}"
+    }
+    target_value = 100.0 # Umbral bajo (100 peticiones/min) para poder probarlo fácilmente.
+  }
+}

@@ -74,5 +74,21 @@ Si sospechas que una instancia está mal configurada, puedes forzar su reemplazo
 3.  **Resultado:** Terraform destruirá y recreará la plantilla, y el ASG realizará un **Rolling Update** (renovará las máquinas una a una) sin que Moodle deje de funcionar.
 
 ---
+
+## 5. Prueba de Tráfico Escalar (Network Load) 🌐
+**Objetivo:** Demostrar que el sistema crece por número de peticiones, incluso si el CPU no sufre.
+
+### Pasos:
+1.  Instala una herramienta de benchmark (ej: `ab` de Apache) en tu ordenador local o en una instancia auxiliar.
+2.  Lanza un ataque de peticiones controladas al Load Balancer:
+    ```bash
+    # Lanza 10,000 peticiones, de 10 en 10
+    ab -n 10000 -c 10 http://<tu-url-moodle>/
+    ```
+3.  **Observación:**
+    *   Ve a **CloudWatch Alarms**. Verás que la alarma `TargetTracking-moodle-request-policy` se activa al superar las 100 peticiones/min.
+    *   El ASG lanzará una nueva instancia para repartir la "carga de red".
+
+---
 **David Arbelaez Mutis - TFG 2026**
 *"Diseñado para fallar, construido para sobrevivir."*
