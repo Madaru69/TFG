@@ -54,5 +54,25 @@ Esta guía detalla cómo poner a prueba la infraestructura **Bytemind-IaC** para
 5.  **Resultado esperado:** El curso y los archivos siguen ahí. Esto demuestra que el almacenamiento está correctamente desacoplado en **RDS** y **EFS**.
 
 ---
+
+## 4. Validación Nativa con Terraform 🛠️
+Terraform permite validar la capacidad de gestión del estado y la resiliencia de la configuración sin salir de la terminal.
+
+### A. Prueba de Escalado Manual
+Cambia la configuración para ver cómo Terraform ajusta la infraestructura en caliente.
+1.  En `asg.tf`, cambia `desired_capacity = 2` a `desired_capacity = 3`.
+2.  Ejecuta `terraform apply`.
+3.  **Resultado:** Terraform detectará la diferencia y lanzará una nueva instancia inmediatamente para cumplir con el estado deseado.
+
+### B. Simulación de Corrupción (Reemplazo Forzado)
+Si sospechas que una instancia está mal configurada, puedes forzar su reemplazo.
+1.  Lista tus instancias: `terraform state list | grep aws_instance` (Si usaras instancias fijas).
+2.  Como usamos un ASG, podemos forzar el reemplazo de la **Plantilla de Lanzamiento**:
+    ```bash
+    terraform apply -replace="aws_launch_template.moodle_lt"
+    ```
+3.  **Resultado:** Terraform destruirá y recreará la plantilla, y el ASG realizará un **Rolling Update** (renovará las máquinas una a una) sin que Moodle deje de funcionar.
+
+---
 **David Arbelaez Mutis - TFG 2026**
 *"Diseñado para fallar, construido para sobrevivir."*
