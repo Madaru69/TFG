@@ -32,6 +32,10 @@ graph TB
                 end
             end
 
+            subgraph "Auto Scaling Engine"
+                ASG_Brain{"Dual Scaling Policy<br/>(CPU 50% / Traffic 100 req)"}:::compute
+            end
+
             subgraph "Private Tier (Data Strategy)"
                 RDS[("Amazon RDS (MySQL 8.0)<br/>Shared Database Engine")]:::storage
                 EFS["Amazon EFS<br/>moodledata (Read/Write)"]:::storage
@@ -40,12 +44,19 @@ graph TB
     end
 
     %% --- FLUJO DE DATOS ---
-    Alumno -- "https://moodle.bytemind..." --> IGW
+    Alumno -- "HTTP/S Traffic" --> IGW
     IGW --> ALB
     
-    ALB -- "HTTPS Proxy" --> EC2_A
-    ALB -- "HTTPS Proxy" --> EC2_B
+    ALB -- "Peticiones Balanceadas" --> EC2_A
+    ALB -- "Peticiones Balanceadas" --> EC2_B
     
+    %% --- INTELIGENCIA DE ESCALADO ---
+    EC2_A -- "CPU Metrics" --> ASG_Brain
+    EC2_B -- "CPU Metrics" --> ASG_Brain
+    ALB -- "Traffic Metrics" --> ASG_Brain
+    ASG_Brain -. "Launch/Terminate" .-> EC2_A
+    ASG_Brain -. "Launch/Terminate" .-> EC2_B
+
     EC2_A -- "SQL (3306)" --> RDS
     EC2_B -- "SQL (3306)" --> RDS
     
