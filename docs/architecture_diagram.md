@@ -1,61 +1,54 @@
-# Arquitectura de Sistemas: Moodle High Availability (Bytemind-IaC)
+# Arquitectura de Sistemas: Moodle HA (Bytemind-IaC)
 
-Esta arquitectura representa el diseño consolidado tras la Fase de Recuperación V18 y la Validación de Alta Disponibilidad.
+Esta arquitectura representa el diseño consolidado tras la Fase de Recuperación V18 y la Validación de Elasticidad Dual.
 
 ```mermaid
-flowchart TB
+graph TD
     %% --- ACTORES ---
     User((Estudiante/Admin))
     
-    subgraph cloud ["AWS Cloud (eu-south-2)"]
-        subgraph vpc ["VPC (10.0.0.0/16)"]
-            direction TB
+    subgraph AWS ["Infraestructura AWS (Madrid)"]
+        subgraph Red ["VPC y Networking"]
             IGW["Internet Gateway"]
-            
-            subgraph public ["Public Tier (Multi-AZ)"]
-                ALB["Application Load Balancer"]
-                EC2A["EC2 Node A (t3.medium)"]
-                EC2B["EC2 Node B (t3.medium)"]
-            end
+            ALB["Load Balancer (ALB)"]
+        end
 
-            subgraph engine ["Scaling Engine"]
-                ASGBrain{"ASG Policy<br/>(CPU + Traffic)"}
-            end
+        subgraph Cluster ["Auto Scaling Group"]
+            NodeA["Servidor Moodle A"]
+            NodeB["Servidor Moodle B"]
+            Brain{"Política de Escalado<br/>(CPU + Tráfico)"}
+        end
 
-            subgraph private ["Private Tier (Data)"]
-                RDS[("Amazon RDS (DB)")]
-                EFS["Amazon EFS (Files)"]
-            end
+        subgraph Datos ["Capa de Persistencia"]
+            RDS[("Base de Datos RDS")]
+            EFS["Archivos EFS (Shared)"]
         end
     end
 
     %% --- FLUJO ---
-    User --> IGW --> ALB
-    ALB --> EC2A
-    ALB --> EC2B
+    User --> IGW
+    IGW --> ALB
+    ALB --> NodeA
+    ALB --> NodeB
     
     %% --- ESCALADO ---
-    EC2A -.-> ASGBrain
-    EC2B -.-> ASGBrain
-    ALB -.-> ASGBrain
-    ASGBrain == Launch ==> EC2A
-    ASGBrain == Launch ==> EC2B
+    NodeA -.-> Brain
+    NodeB -.-> Brain
+    ALB -.-> Brain
+    Brain ==> NodeA
+    Brain ==> NodeB
 
-    %% --- DATOS ---
-    EC2A --- RDS
-    EC2B --- RDS
-    EC2A --- EFS
-    EC2B --- EFS
+    %% --- CONEXIONES ---
+    NodeA --- RDS
+    NodeB --- RDS
+    NodeA --- EFS
+    NodeB --- EFS
 
-    %% --- ESTILOS ---
-    style IGW fill:#e1f5fe,stroke:#01579b
+    %% --- ESTILOS BASICOS ---
     style ALB fill:#e1f5fe,stroke:#01579b
-    style EC2A fill:#ede7f6,stroke:#4527a0
-    style EC2B fill:#ede7f6,stroke:#4527a0
-    style ASGBrain fill:#fff9c4,stroke:#fbc02d
+    style Brain fill:#fff9c4,stroke:#fbc02d
     style RDS fill:#e8f5e9,stroke:#1b5e20
     style EFS fill:#e8f5e9,stroke:#1b5e20
-    style cloud fill:#f9f9f9,stroke:#333,stroke-dasharray: 5 5
 ```
 
 ---
