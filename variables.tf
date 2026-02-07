@@ -61,3 +61,10 @@ variable "db_password" {
   default   = "PasswordSeguro123!"
   sensitive = true
 }
+
+# --- DOMINIO ---
+variable "domain_name" {
+  description = "Dominio principal del proyecto"
+  type        = string
+  default     = "bytemind.es"
+}

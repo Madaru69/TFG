@@ -58,7 +58,7 @@ resource "aws_launch_template" "moodle_lt" {
               if [ -n "$CONFIG_FILE" ]; then
                   # USAMOS CONCATENACIÓN DE COMILLAS PARA EVITAR QUE BASH O TERRAFORM SE COMAN EL $
                   sed -i "s|.*dbhost.*|"'\$CFG->'"dbhost    = '${aws_db_instance.moodle_db.address}';|g" $CONFIG_FILE
-                  sed -i "s|.*wwwroot.*|"'\$CFG->'"wwwroot   = 'http://${aws_lb.app_alb.dns_name}';|g" $CONFIG_FILE
+                  sed -i "s|.*wwwroot.*|"'\$CFG->'"wwwroot   = 'https://${var.domain_name}';|g" $CONFIG_FILE
                   sed -i "s|.*dataroot.*|"'\$CFG->'"dataroot   = '$MOODLE_DATA';|g" $CONFIG_FILE
                   sed -i "s|.*dbname.*|"'\$CFG->'"dbname     = '${var.db_name}';|g" $CONFIG_FILE
                   sed -i "s|.*dbuser.*|"'\$CFG->'"dbuser     = '${var.db_username}';|g" $CONFIG_FILE
