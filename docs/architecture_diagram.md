@@ -4,72 +4,58 @@ Esta arquitectura representa el diseño consolidado tras la Fase de Recuperació
 
 ```mermaid
 flowchart TB
-    %% --- ESTILOS PROFESIONALES ---
-    classDef cloud fill:#f1f2f3,stroke:#3498db,stroke-width:2px,stroke-dasharray: 5 5;
-    classDef network fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
-    classDef compute fill:#ede7f6,stroke:#4527a0,stroke-width:2px;
-    classDef storage fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px;
-    classDef user stroke:#333,stroke-width:3px;
-
     %% --- ACTORES ---
-    Alumno((Estudiante)):::user
-    Admin((Administrador)):::user
-
-    subgraph "AWS Global Infrastructure (eu-south-2)"
-        subgraph "Virtual Private Cloud (10.0.0.0/16)"
+    User((Estudiante/Admin))
+    
+    subgraph cloud ["AWS Cloud (eu-south-2)"]
+        subgraph vpc ["VPC (10.0.0.0/16)"]
             direction TB
-            IGW["Internet Gateway"]:::network
+            IGW["Internet Gateway"]
             
-            subgraph "Public Tier (Multi-AZ Connectivity)"
-                ALB["Application Load Balancer"]:::network
-                
-                subgraph "AZ: south-2a (Primary)"
-                    EC2A["EC2 Moodle Node A<br/>(t3.medium)"]:::compute
-                end
-
-                subgraph "AZ: south-2b (Secondary)"
-                    EC2B["EC2 Moodle Node B<br/>(t3.medium)"]:::compute
-                end
+            subgraph public ["Public Tier (Multi-AZ)"]
+                ALB["Application Load Balancer"]
+                EC2A["EC2 Node A (t3.medium)"]
+                EC2B["EC2 Node B (t3.medium)"]
             end
 
-            subgraph "Auto Scaling Engine"
-                ASGBrain{"Dual Scaling Policy<br/>(CPU 50% / Traffic 100 req)"}:::compute
+            subgraph engine ["Scaling Engine"]
+                ASGBrain{"ASG Policy<br/>(CPU + Traffic)"}
             end
 
-            subgraph "Private Tier (Data Strategy)"
-                RDS[("Amazon RDS (MySQL 8.0)")]:::storage
-                EFS["Amazon EFS (NFS Storage)"]:::storage
+            subgraph private ["Private Tier (Data)"]
+                RDS[("Amazon RDS (DB)")]
+                EFS["Amazon EFS (Files)"]
             end
         end
     end
 
-    %% --- FLUJO DE DATOS ---
-    Alumno -- "HTTP/S Traffic" --> IGW
-    IGW --> ALB
+    %% --- FLUJO ---
+    User --> IGW --> ALB
+    ALB --> EC2A
+    ALB --> EC2B
     
-    ALB -- "Peticiones Balanceadas" --> EC2A
-    ALB -- "Peticiones Balanceadas" --> EC2B
-    
-    %% --- INTELIGENCIA DE ESCALADO ---
-    EC2A -- "CPU Metrics" --> ASGBrain
-    EC2B -- "CPU Metrics" --> ASGBrain
-    ALB -- "Traffic Metrics" --> ASGBrain
-    ASGBrain -. "Launch / Terminate" .-> EC2A
-    ASGBrain -. "Launch / Terminate" .-> EC2B
+    %% --- ESCALADO ---
+    EC2A -.-> ASGBrain
+    EC2B -.-> ASGBrain
+    ALB -.-> ASGBrain
+    ASGBrain == Launch ==> EC2A
+    ASGBrain == Launch ==> EC2B
 
-    EC2A -- "SQL (3306)" --> RDS
-    EC2B -- "SQL (3306)" --> RDS
-    
-    EC2A -- "NFS v4.1 (2049)" --> EFS
-    EC2B -- "NFS v4.1 (2049)" --> EFS
+    %% --- DATOS ---
+    EC2A --- RDS
+    EC2B --- RDS
+    EC2A --- EFS
+    EC2B --- EFS
 
-    Admin -- "SSM Session" --> EC2A
-    Admin -- "SSM Session" --> EC2B
-
-    %% --- CLASES DE ESTILO ---
-    class IGW,ALB network;
-    class EC2A,EC2B compute;
-    class RDS,EFS storage;
+    %% --- ESTILOS ---
+    style IGW fill:#e1f5fe,stroke:#01579b
+    style ALB fill:#e1f5fe,stroke:#01579b
+    style EC2A fill:#ede7f6,stroke:#4527a0
+    style EC2B fill:#ede7f6,stroke:#4527a0
+    style ASGBrain fill:#fff9c4,stroke:#fbc02d
+    style RDS fill:#e8f5e9,stroke:#1b5e20
+    style EFS fill:#e8f5e9,stroke:#1b5e20
+    style cloud fill:#f9f9f9,stroke:#333,stroke-dasharray: 5 5
 ```
 
 ---
