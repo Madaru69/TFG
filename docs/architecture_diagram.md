@@ -3,7 +3,7 @@
 Esta arquitectura representa el diseño consolidado tras la Fase de Recuperación V18 y la Validación de Alta Disponibilidad.
 
 ```mermaid
-graph TB
+flowchart TB
     %% --- ESTILOS PROFESIONALES ---
     classDef cloud fill:#f1f2f3,stroke:#3498db,stroke-width:2px,stroke-dasharray: 5 5;
     classDef network fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
@@ -18,27 +18,27 @@ graph TB
     subgraph "AWS Global Infrastructure (eu-south-2)"
         subgraph "Virtual Private Cloud (10.0.0.0/16)"
             direction TB
-            IGW["Internet Gateway<br/>(Edge Component)"]:::network
+            IGW["Internet Gateway"]:::network
             
             subgraph "Public Tier (Multi-AZ Connectivity)"
-                ALB["Application Load Balancer<br/>(Port 80/443 Gateway)"]:::network
+                ALB["Application Load Balancer"]:::network
                 
                 subgraph "AZ: south-2a (Primary)"
-                    EC2_A["EC2 Moodle Node A<br/>(t3.medium)"]:::compute
+                    EC2A["EC2 Moodle Node A<br/>(t3.medium)"]:::compute
                 end
 
                 subgraph "AZ: south-2b (Secondary)"
-                    EC2_B["EC2 Moodle Node B<br/>(t3.medium)"]:::compute
+                    EC2B["EC2 Moodle Node B<br/>(t3.medium)"]:::compute
                 end
             end
 
             subgraph "Auto Scaling Engine"
-                ASG_Brain{"Dual Scaling Policy<br/>(CPU 50% / Traffic 100 req)"}:::compute
+                ASGBrain{"Dual Scaling Policy<br/>(CPU 50% / Traffic 100 req)"}:::compute
             end
 
             subgraph "Private Tier (Data Strategy)"
-                RDS[("Amazon RDS (MySQL 8.0)<br/>Shared Database Engine")]:::storage
-                EFS["Amazon EFS<br/>moodledata (Read/Write)"]:::storage
+                RDS[("Amazon RDS (MySQL 8.0)")]:::storage
+                EFS["Amazon EFS (NFS Storage)"]:::storage
             end
         end
     end
@@ -47,28 +47,28 @@ graph TB
     Alumno -- "HTTP/S Traffic" --> IGW
     IGW --> ALB
     
-    ALB -- "Peticiones Balanceadas" --> EC2_A
-    ALB -- "Peticiones Balanceadas" --> EC2_B
+    ALB -- "Peticiones Balanceadas" --> EC2A
+    ALB -- "Peticiones Balanceadas" --> EC2B
     
     %% --- INTELIGENCIA DE ESCALADO ---
-    EC2_A -- "CPU Metrics" --> ASG_Brain
-    EC2_B -- "CPU Metrics" --> ASG_Brain
-    ALB -- "Traffic Metrics" --> ASG_Brain
-    ASG_Brain -. "Launch/Terminate" .-> EC2_A
-    ASG_Brain -. "Launch/Terminate" .-> EC2_B
+    EC2A -- "CPU Metrics" --> ASGBrain
+    EC2B -- "CPU Metrics" --> ASGBrain
+    ALB -- "Traffic Metrics" --> ASGBrain
+    ASGBrain -. "Launch / Terminate" .-> EC2A
+    ASGBrain -. "Launch / Terminate" .-> EC2B
 
-    EC2_A -- "SQL (3306)" --> RDS
-    EC2_B -- "SQL (3306)" --> RDS
+    EC2A -- "SQL (3306)" --> RDS
+    EC2B -- "SQL (3306)" --> RDS
     
-    EC2_A -- "NFS v4.1 (2049)" --> EFS
-    EC2_B -- "NFS v4.1 (2049)" --> EFS
+    EC2A -- "NFS v4.1 (2049)" --> EFS
+    EC2B -- "NFS v4.1 (2049)" --> EFS
 
-    Admin -- "SSM Session" --> EC2_A
-    Admin -- "SSM Session" --> EC2_B
+    Admin -- "SSM Session" --> EC2A
+    Admin -- "SSM Session" --> EC2B
 
     %% --- CLASES DE ESTILO ---
     class IGW,ALB network;
-    class EC2_A,EC2_B compute;
+    class EC2A,EC2B compute;
     class RDS,EFS storage;
 ```
 
