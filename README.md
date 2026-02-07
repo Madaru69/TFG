@@ -24,7 +24,7 @@ Este proyecto documenta el salto tecnológico necesario para mover aplicaciones 
 ## 🏗️ Showcase: Arquitectura de Ingeniería Validada
 *Diagrama técnico final detallado, validado mediante Chaos Engineering y pruebas de carga intensivas.*
 
-<img src="docs/diagrams/moodle_ha_golden_elastic.png" alt="Arquitectura Ingeniería Detallada" width="800">
+<img src="docs/diagrams/moodle_ha_final_architecture.png" alt="Arquitectura Ingeniería Detallada" width="800">
 
 ---
 
