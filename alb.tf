@@ -6,6 +6,7 @@ resource "aws_lb" "app_alb" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
   subnets            = [aws_subnet.public_subnet_a.id, aws_subnet.public_subnet_b.id]
+  idle_timeout       = 300
 }
 
 resource "aws_lb_target_group" "alb_tg" {
@@ -19,9 +20,9 @@ resource "aws_lb_target_group" "alb_tg" {
     protocol            = "HTTP"
     matcher             = "200-399"
     interval            = 30
-    timeout             = 5
+    timeout             = 10
     healthy_threshold   = 2
-    unhealthy_threshold = 2
+    unhealthy_threshold = 5
   }
 }
 

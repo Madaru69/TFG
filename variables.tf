@@ -43,7 +43,7 @@ variable "private_subnet_b_cidr" {
 variable "instance_type" {
   description = "Tipo de instancia (Escalado a t3.medium por falta de stock total en Madrid)"
   type        = string
-  default     = "t3.medium"
+  default     = "t3.micro"
 }
 
 # --- BASE DE DATOS ---

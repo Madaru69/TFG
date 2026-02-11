@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<!-- Question: 1 -->
+<question type="multichoice">
+  <name>
+    <text>Cloud - Elasticidad</text>
+  </name>
+  <questiontext format="html">
+    <text><![CDATA[<p>¿Qué característica de la nube permite aumentar o disminuir recursos automáticamente según la demanda?</p>]]></text>
+  </questiontext>
+  <answer fraction="100">
+    <text>Elasticidad Rápida</text>
+    <feedback><text>¡Correcto! Es la capacidad de escalar hacia fuera o hacia dentro.</text></feedback>
+  </answer>
+  <answer fraction="0">
+    <text>Servicio Medido</text>
+    <feedback><text>Incorrecto. Eso se refiere a la facturación.</text></feedback>
+  </answer>
+  <answer fraction="0">
+    <text>Acceso a la red</text>
+    <feedback><text>Incorrecto.</text></feedback>
+  </answer>
+</question>
+
+<!-- Question: 2 -->
+<question type="matching">
+  <name>
+    <text>Modelos de Servicio</text>
+  </name>
+  <questiontext format="html">
+    <text><![CDATA[<p>Relaciona cada ejemplo con su Modelo de Servicio (IaaS, PaaS, SaaS).</p>]]></text>
+  </questiontext>
+  <subquestion>
+    <text>Gmail / Dropbox</text>
+    <answer>
+      <text>SaaS (Software as a Service)</text>
+    </answer>
+  </subquestion>
+  <subquestion>
+    <text>Amazon EC2 (Máquinas Virtuales)</text>
+    <answer>
+      <text>IaaS (Infrastructure as a Service)</text>
+    </answer>
+  </subquestion>
+  <subquestion>
+    <text>Amazon RDS (Base de Datos Gestionada)</text>
+    <answer>
+      <text>PaaS (Platform as a Service)</text>
+    </answer>
+  </subquestion>
+</question>
+
+<!-- Question: 3 -->
+<question type="truefalse">
+  <name>
+    <text>AWS - VPC</text>
+  </name>
+  <questiontext format="html">
+    <text><![CDATA[<p>Una VPC (Virtual Private Cloud) es un espacio de red público donde cualquiera puede ver tus servidores por defecto.</p>]]></text>
+  </questiontext>
+  <answer fraction="0">
+    <text>Verdadero</text>
+    <feedback><text>¡Falso! Una VPC es privada y aislada lógicamente.</text></feedback>
+  </answer>
+  <answer fraction="100">
+    <text>Falso</text>
+    <feedback><text>Correcto. Es tu red privada virtual.</text></feedback>
+  </answer>
+</question>
+</quiz>

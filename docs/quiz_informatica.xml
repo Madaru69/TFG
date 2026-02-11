@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<!-- Question: 1 -->
+<question type="multichoice">
+  <name>
+    <text>Hardware - Definición</text>
+  </name>
+  <questiontext format="html">
+    <text><![CDATA[<p>¿Cuál de los siguientes componentes se considera "Memoria Volátil" (se borra al apagar el equipo)?</p>]]></text>
+  </questiontext>
+  <answer fraction="100">
+    <text>Memoria RAM</text>
+    <feedback><text>¡Correcto! La RAM es el área de trabajo temporal.</text></feedback>
+  </answer>
+  <answer fraction="0">
+    <text>Disco Duro (HDD)</text>
+    <feedback><text>Incorrecto. El disco duro almacena datos de forma permanente.</text></feedback>
+  </answer>
+  <answer fraction="0">
+    <text>CPU</text>
+    <feedback><text>Incorrecto. La CPU procesa, no almacena.</text></feedback>
+  </answer>
+</question>
+
+<!-- Question: 2 -->
+<question type="truefalse">
+  <name>
+    <text>Seguridad - Phishing</text>
+  </name>
+  <questiontext format="html">
+    <text><![CDATA[<p>Si recibes un correo de tu banco pidiendo tu clave pin por un enlace urgente, ¿debes hacer clic?</p>]]></text>
+  </questiontext>
+  <answer fraction="0">
+    <text>Verdadero</text>
+    <feedback><text>¡Peligro! Los bancos nunca piden claves por correo.</text></feedback>
+  </answer>
+  <answer fraction="100">
+    <text>Falso</text>
+    <feedback><text>¡Correcto! Es un intento de estafa (Phishing).</text></feedback>
+  </answer>
+</question>
+
+<!-- Question: 3 -->
+<question type="multichoice">
+  <name>
+    <text>SO - Linux</text>
+  </name>
+  <questiontext format="html">
+    <text><![CDATA[<p>¿Cuál es la principal característica del sistema operativo Linux?</p>]]></text>
+  </questiontext>
+  <answer fraction="100">
+    <text>Es de código abierto (Open Source) y generalmente gratuito.</text>
+    <feedback><text>Correcto.</text></feedback>
+  </answer>
+  <answer fraction="0">
+    <text>Es exclusivo de ordenadores Apple.</text>
+    <feedback><text>Incorrecto, eso es macOS.</text></feedback>
+  </answer>
+  <answer fraction="0">
+    <text>Es el único que funciona sin teclado.</text>
+    <feedback><text>Incorrecto.</text></feedback>
+  </answer>
+</question>
+</quiz>

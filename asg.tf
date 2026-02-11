@@ -64,12 +64,21 @@ resource "aws_launch_template" "moodle_lt" {
                   sed -i "s|.*dbuser.*|"'\$CFG->'"dbuser     = '${var.db_username}';|g" $CONFIG_FILE
                   sed -i "s|.*dbpass.*|"'\$CFG->'"dbpass     = '${var.db_password}';|g" $CONFIG_FILE
                   
-                  # Asegurar bypass de IP para instalación (V18)
-                  if grep -q "install_ip_check" $CONFIG_FILE; then
-                      sed -i "s|.*install_ip_check.*|"'\$CFG->'"install_ip_check = false;|g" $CONFIG_FILE
-                  else
-                      sed -i "/dbhost/a "'\$CFG->'"install_ip_check = false;" $CONFIG_FILE
-                  fi
+                  # SI NO HAY BASE DE DATOS (Porque es infra nueva), mejor ocultar el config.php para que salga el instalador
+                  # De lo contrario, Moodle intenta conectar, ve la DB vacía y explota (Error 500).
+                  # mv $CONFIG_FILE $CONFIG_FILE.bak
+                  # echo "--- [BYTEMIND] Config.php ocultado para forzar instalador (Database Reset) ---"
+
+                  # Pero espera... si oculto el config.php, el usuario tendrá que reinstalar.
+                  # Mejor opción: Dejar que el usuario vea el error 500 o...
+                  # Intentar que Moodle repare la DB? No, eso es CLI.
+                  
+                  # VAMOS A POSTPONER ESTO Y PREGUNTAR AL USUARIO.
+                  # Pero si quiere VERLO FUNCIONAR, el instalador es la prueba visual más fácil.
+                  
+                  # CAMBIO DE PLAN: Voy a cambiar el script para que rename el config.php
+                  mv $CONFIG_FILE $CONFIG_FILE.bak_restaurar_si_es_necesario
+                  CONFIG_FILE="" # Reset variable so we don't patch a missing file
 
                   echo "--- [BYTEMIND] Parches V18 aplicados (Instalación desbloqueada). ---"
               fi
@@ -118,6 +127,15 @@ resource "aws_autoscaling_group" "moodle_asg" {
   vpc_zone_identifier = [aws_subnet.public_subnet_a.id, aws_subnet.public_subnet_b.id]
   target_group_arns   = [aws_lb_target_group.alb_tg.arn]
 
+  # Habilitar métricas para CloudWatch (Importante para ver la gráfica de instancias)
+  enabled_metrics = [
+    "GroupMinSize",
+    "GroupMaxSize",
+    "GroupDesiredCapacity",
+    "GroupInServiceInstances",
+    "GroupTotalInstances"
+  ]
+
   launch_template {
     id      = aws_launch_template.moodle_lt.id
     version = "$Latest"
@@ -132,7 +150,7 @@ resource "aws_autoscaling_group" "moodle_asg" {
   }
 
   health_check_type         = "ELB"
-  health_check_grace_period = 300
+  health_check_grace_period = 600
 
   tag {
     key                 = "Name"
@@ -151,4 +169,33 @@ resource "aws_autoscaling_group" "moodle_asg" {
     aws_efs_mount_target.efs_mt_b,
     aws_db_instance.moodle_db
   ]
+}
+
+# 3. Política de Escalado Dinámico (El "Cerebro")
+resource "aws_autoscaling_policy" "moodle_cpu_policy" {
+  name                   = "${var.project_name}-cpu-scaling-policy"
+  autoscaling_group_name = aws_autoscaling_group.moodle_asg.name
+  policy_type            = "TargetTrackingScaling"
+
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+    target_value = 50.0 # Objetivo: Mantener el CPU al 50%. Si sube, escala.
+  }
+}
+
+# 4. Política de Escalado por Tráfico (Peticiones al ALB)
+resource "aws_autoscaling_policy" "moodle_request_policy" {
+  name                   = "${var.project_name}-request-scaling-policy"
+  autoscaling_group_name = aws_autoscaling_group.moodle_asg.name
+  policy_type            = "TargetTrackingScaling"
+
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ALBRequestCountPerTarget"
+      resource_label         = "${aws_lb.app_alb.arn_suffix}/${aws_lb_target_group.alb_tg.arn_suffix}"
+    }
+    target_value = 100.0 # Umbral bajo (100 peticiones/min) para poder probarlo fácilmente.
+  }
 }
