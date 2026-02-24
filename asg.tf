@@ -64,6 +64,11 @@ resource "aws_launch_template" "moodle_lt" {
                   sed -i "s|.*dbuser.*|"'\$CFG->'"dbuser     = '${var.db_username}';|g" $CONFIG_FILE
                   sed -i "s|.*dbpass.*|"'\$CFG->'"dbpass     = '${var.db_password}';|g" $CONFIG_FILE
                   
+                  # [FIX] DESACTIVAR SSL PROXY Y LOGIN HTTPS PARA EVITAR BUCLE DE REDIRECCIÓN
+                  # Si el config.php antiguo traía esto activado, causará conflicto con el ALB HTTP.
+                  sed -i "s|.*sslproxy.*|"'\$CFG->'"sslproxy   = 0;|g" $CONFIG_FILE
+                  sed -i "s|.*loginhttps.*|"'\$CFG->'"loginhttps = 0;|g" $CONFIG_FILE
+                  
                   # SI NO HAY BASE DE DATOS (Porque es infra nueva), mejor ocultar el config.php para que salga el instalador
                   # De lo contrario, Moodle intenta conectar, ve la DB vacía y explota (Error 500).
                   # mv $CONFIG_FILE $CONFIG_FILE.bak
@@ -76,11 +81,7 @@ resource "aws_launch_template" "moodle_lt" {
                   # VAMOS A POSTPONER ESTO Y PREGUNTAR AL USUARIO.
                   # Pero si quiere VERLO FUNCIONAR, el instalador es la prueba visual más fácil.
                   
-                  # CAMBIO DE PLAN: Voy a cambiar el script para que rename el config.php
-                  mv $CONFIG_FILE $CONFIG_FILE.bak_restaurar_si_es_necesario
-                  CONFIG_FILE="" # Reset variable so we don't patch a missing file
-
-                  echo "--- [BYTEMIND] Parches V18 aplicados (Instalación desbloqueada). ---"
+              echo "--- [BYTEMIND] Parches V18 aplicados (Config.php mantenido). ---"
               fi
 
               # 5. Permisos y Estructura Legacy
