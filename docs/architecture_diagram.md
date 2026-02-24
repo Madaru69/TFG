@@ -1,6 +1,6 @@
-# Arquitectura de Sistemas: Moodle High Availability (Bytemind-IaC)
+﻿# Arquitectura de Sistemas: Moodle High Availability (Bytemind-IaC)
 
-Esta arquitectura representa el diseño consolidado tras la Fase de Recuperación V18 y la Validación de Alta Disponibilidad.
+Esta arquitectura representa el diseÃ±o consolidado tras la Fase de RecuperaciÃ³n V18 y la ValidaciÃ³n de Alta Disponibilidad.
 
 ```mermaid
 graph TB
@@ -63,31 +63,31 @@ graph TB
 
 ---
 
-## 🚀 Evolución: Del Monolito a la Descentralización
+## ðŸš€ EvoluciÃ³n: Del Monolito a la DescentralizaciÃ³n
 
-Un punto clave del TFG es la transición desde un despliegue tradicional hacia uno de grado empresarial.
+Un punto clave del TFG es la transiciÃ³n desde un despliegue tradicional hacia uno de grado empresarial.
 
-### 🔴 Antes: Arquitectura Monolítica (Standard Moodle)
-En un despliegue básico, todos los componentes conviven en un único servidor:
-- **Punto Único de Fallo:** Si la instancia EC2 falla, todo el sistema cae.
-- **Escalabilidad Nula:** Para crecer, hay que aumentar el tamaño de la máquina (Escalado Vertical), lo cual es costoso y requiere tiempo de inactividad.
-- **Riesgo de Datos:** La base de datos y los archivos están dentro del servidor; si el disco se corrompe, los datos se pierden.
+### ðŸ”´ Antes: Arquitectura MonolÃ­tica (Standard Moodle)
+En un despliegue bÃ¡sico, todos los componentes conviven en un Ãºnico servidor:
+- **Punto Ãšnico de Fallo:** Si la instancia EC2 falla, todo el sistema cae.
+- **Escalabilidad Nula:** Para crecer, hay que aumentar el tamaÃ±o de la mÃ¡quina (Escalado Vertical), lo cual es costoso y requiere tiempo de inactividad.
+- **Riesgo de Datos:** La base de datos y los archivos estÃ¡n dentro del servidor; si el disco se corrompe, los datos se pierden.
 
-### 🟢 Después: Arquitectura Bytemind HA (Descentralizada)
-Nuestra solución desacopla las responsabilidades para maximizar la resiliencia:
-- **Cómputo Inmutable:** Las instancias EC2 son efímeras. Si una muere, el ASG lanza otra idéntica automáticamente.
+### ðŸŸ¢ DespuÃ©s: Arquitectura Bytemind HA (Descentralizada)
+Nuestra soluciÃ³n desacopla las responsabilidades para maximizar la resiliencia:
+- **CÃ³mputo Inmutable:** Las instancias EC2 son efÃ­meras. Si una muere, el ASG lanza otra idÃ©ntica automÃ¡ticamente.
 - **Persistencia Externa:** Los datos viven en servicios gestionados (**RDS** y **EFS**) inmunes a fallos de los servidores de aplicaciones.
-- **Alta Disponibilidad:** Tráfico distribuido por el **ALB** entre múltiples centros de datos (AZ).
+- **Alta Disponibilidad:** TrÃ¡fico distribuido por el **ALB** entre mÃºltiples centros de datos (AZ).
 
-## 🛠️ Especificaciones de la Infraestructura
+## ðŸ› ï¸ Especificaciones de la Infraestructura
 | Componente | Capa | Resiliencia | Notas de TFG |
 | :--- | :--- | :--- | :--- |
-| **ALB** | Networking | Distribuido | Punto único de terminación SSL (Fase 4). |
-| **ASG** | Cómputo | Auto-Healing | Recuperó la flota automáticamente en el Chaos Test. |
+| **ALB** | Networking | Distribuido | Punto Ãºnico de terminaciÃ³n SSL (Fase 4). |
+| **ASG** | CÃ³mputo | Auto-Healing | RecuperÃ³ la flota automÃ¡ticamente en el Chaos Test. |
 | **RDS** | Datos | Gestionado | Backups automatizados y aislamiento en subred privada. |
-| **EFS** | Almacenamiento | Multi-AZ | Punto de montaje común para sesiones y archivos. |
+| **EFS** | Almacenamiento | Multi-AZ | Punto de montaje comÃºn para sesiones y archivos. |
 
-## 🛡️ Hitos de Ingeniería Digital (V18)
-1.  **Aislamiento de Seguridad:** Ninguna instancia EC2 tiene IP pública directa; todo el tráfico pasa por el ALB.
-2.  **Despliegue Inmutable:** El `config.php` se autoconfigura en el arranque para evitar errores de conexión.
-3.  **FinOps Strategy:** El entorno está diseñado para ser **efímero**. Se despliega para exámenes/clases y se destruye (`Destroy`) al finalizar, ahorrando el 100% del coste residual.
+## ðŸ›¡ï¸ Hitos de IngenierÃ­a Digital (V18)
+1.  **Aislamiento de Seguridad:** Ninguna instancia EC2 tiene IP pÃºblica directa; todo el trÃ¡fico pasa por el ALB.
+2.  **Despliegue Inmutable:** El `config.php` se autoconfigura en el arranque para evitar errores de conexiÃ³n.
+3.  **FinOps Strategy:** El entorno estÃ¡ diseÃ±ado para ser **efÃ­mero**. Se despliega para exÃ¡menes/clases y se destruye (`Destroy`) al finalizar, ahorrando el 100% del coste residual.
