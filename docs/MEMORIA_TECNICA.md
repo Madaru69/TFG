@@ -2,8 +2,8 @@
 ## DISEÑO E IMPLEMENTACIÓN DE INFRAESTRUCTURA CLOUD NATIVE DE ALTA DISPONIBILIDAD PARA PLATAFORMAS DE E-LEARNING (MOODLE)
 
 **Ciclo Formativo:** Administración de Sistemas Informáticos en Red (ASIR)  
-**Autor:** [Tu Nombre]  
-**Tutor:** [Nombre del Tutor]  
+**Autor:** David Arbelaez Mutis  
+**Tutor:** Maria Damia  
 **Fecha:** Febrero 2026
 
 ---
