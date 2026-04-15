@@ -1,0 +1,41 @@
+@startuml
+skinparam defaultFontName Calibri
+skinparam padding 4
+skinparam TitleFontSize 16
+skinparam ArrowColor #44546A
+top to bottom direction
+
+skinparam rectangle {
+    BackgroundColor White
+    BorderColor #44546A
+    RoundCorner 10
+}
+skinparam usecase {
+    BackgroundColor #FFFDF0
+    BorderColor #E5B217
+    BorderThickness 2
+}
+skinparam hexagon {
+    BackgroundColor #F2F6FB
+    BorderColor #2B579A
+    BorderThickness 2
+}
+
+rectangle "Flujo de Tráfico de Usuario (Acceso Moodle Transparente)" as Main #F9F9F9;line:555555;line.bold {
+    
+    usecase "Alumno / Profesor:\nAbre el navegador\ny accede al dominio" as U1
+    
+    rectangle "Application Load Balancer (ALB):\nRecibe la petición web publicamente" as U2 #F2F6FB;line:2B579A;line.bold
+    
+    hexagon "Evaluación de Salud (Health Checks)\ny Algoritmo de Enrutamiento:\n¿Cuál nodo EC2 cuenta con\nmenor carga y está 'Healthy'?" as U3
+    
+    rectangle "Zona A:\nInstancia EC2\nprocesa la sesión" as U5A #E6F3E6;line:2CA02C;line.bold
+    rectangle "Zona B:\nInstancia EC2\nprocesa la sesión" as U5B #E6F3E6;line:2CA02C;line.bold
+    
+    U1 -down-> U2 : " Tráfico HTTP/HTTPS"
+    U2 -down-> U3 : " Procesamiento Interno"
+    
+    U3 -down-> U5A : " Opción 1\n(Nodo A)"
+    U3 -down-> U5B : " Opción 2\n(Nodo B)"
+}
+@enduml

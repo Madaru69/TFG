@@ -20,3 +20,6 @@ terraform.rc
 # OS
 .DS_Store
 Thumbs.db
+
+# TFG Private Notes
+local_private/

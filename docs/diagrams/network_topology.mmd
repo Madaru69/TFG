@@ -1,0 +1,62 @@
+flowchart TD
+    %% --- Topologia de AWS ---
+    subgraph AWS ["AWS Cloud"]
+        direction TB
+        
+        subgraph VPC ["VPC Bytemind (Virtual Private Cloud)"]
+            
+            IGW["Internet Gateway"]
+            
+            subgraph PublicAZ ["Subredes Publicas (Multi-AZ)"]
+                ALB["Application Load Balancer (ALB)"]
+                NAT["NAT Gateway"]
+            end
+            
+            subgraph PrivateAZ ["Subredes Privadas (Multi-AZ)"]
+                subgraph ASG ["Auto Scaling Group"]
+                    NodeA["Instancia EC2 Moodle (AZ-A)"]
+                    NodeB["Instancia EC2 Moodle (AZ-B)"]
+                end
+            end
+            
+            subgraph DataAZ ["Subredes de Datos (Privadas Multi-AZ)"]
+                RDS[("Amazon RDS\n(MariaDB)")]
+                EFS[/"Amazon EFS\n(Almacenamiento)"/]
+            end
+            
+        end
+    end
+
+    %% --- Actores Externos ---
+    Usuario(("Usuarios\n(Alumnos/Profesores)"))
+
+    %% --- Flujo de Datos ---
+    Usuario -- "1. Peticion HTTPS" --> IGW
+    IGW -- "2. Enrutamiento" --> ALB
+    ALB -- "3. Balanceo de Carga" --> NodeA
+    ALB -- "3. Balanceo de Carga" --> NodeB
+    
+    NodeA -- "4. Consultas SQL" --> RDS
+    NodeB -- "4. Consultas SQL" --> RDS
+    
+    NodeA -- "5. Lectura/Escritura" --> EFS
+    NodeB -- "5. Lectura/Escritura" --> EFS
+    
+    NodeA -. "Salida a Internet" .-> NAT
+    NodeB -. "Salida a Internet" .-> NAT
+    NAT -.-> IGW
+
+    %% --- Estilos ---
+    classDef vpc fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000
+    classDef public fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+    classDef private fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    classDef data fill:#fce4ec,stroke:#c2185b,stroke-width:2px,color:#000
+    classDef item fill:#ffffff,stroke:#757575,stroke-width:1px,color:#000
+    classDef default fill:#fafafa,stroke:#333,stroke-width:1px,color:#000
+    
+    class VPC vpc
+    class PublicAZ public
+    class PrivateAZ private
+    class ASG private
+    class DataAZ data
+    class IGW,ALB,NAT,NodeA,NodeB,RDS,EFS,Usuario item

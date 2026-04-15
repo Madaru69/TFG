@@ -1,15 +1,15 @@
 # --- asg.tf (Auto Scaling Group) ---
 
-# 1. Plantilla de Lanzamiento (El plano de los servidores)
+# 1. Plantilla de Lanzamiento (Definición Base de Capacidad de Cómputo)
 resource "aws_launch_template" "moodle_lt" {
-  name_prefix   = "${var.project_name}-LT-"
-  
-  # TU AMI (Imagen Maestra) - Asegúrate de que esta imagen existe en tu cuenta
-  image_id      = "ami-0216c40e040e8230b" 
-  
-  # Tipo de instancia (t3.micro para la región España)
+  name_prefix = "${var.project_name}-LT-"
+
+  # Especificación de la Amazon Machine Image (AMI) base pre-configurada para el despliegue de Moodle
+  image_id = "ami-0216c40e040e8230b"
+
+  # Tipo de instancia EC2 optimizada para la región objetivo
   instance_type = var.instance_type
-  
+
   # Perfil IAM para poder montar el EFS
   iam_instance_profile {
     name = aws_iam_instance_profile.ec2_profile.name
@@ -18,13 +18,13 @@ resource "aws_launch_template" "moodle_lt" {
   # Security Group (Solo tráfico desde el ALB)
   vpc_security_group_ids = [aws_security_group.web_sg.id]
 
-  # User Data V10: Sincronización Universal Bytemind
+  # User Data: Script de inicialización (Bootstrap) para auto-configuración y enganche a EFS/RDS
   user_data = base64encode(<<-EOF
               #!/bin/bash
-              # 1. Logs para auditoría y rescate
+              # 1. Configuración de logs de inicialización para auditoría (Cloud-init)
               exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
               
-              echo "--- [RESCATE MÁXIMO] Alineando Moodle con la Infraestructura Nueva ---"
+              echo "--- [INIT] Alineando servicios web con la nueva infraestructura IaC ---"
               systemctl stop apache2
               systemctl stop mysql || true
               systemctl stop mariadb || true
@@ -42,8 +42,8 @@ resource "aws_launch_template" "moodle_lt" {
               done
               echo "¡RDS Detectado!"
 
-              # 4. Sincronización God-Mode (V18) - DESBLOQUEO DE INSTALACIÓN
-              echo "--- [BYTEMIND] Iniciando Parcheo V18 ---"
+              # 4. Sincronización de configuración base de Moodle (config.php)
+              echo "--- [INIT] Configurando parámetros de conexión a RDS y EFS ---"
               
               if [ -f "/var/www/html/moodle/config.php" ]; then
                   CONFIG_FILE="/var/www/html/moodle/config.php"
@@ -53,7 +53,7 @@ resource "aws_launch_template" "moodle_lt" {
                   CONFIG_FILE=$(find /var/www/html -name config.php | grep -v "moodledata" | head -n 1)
               fi
               
-              echo "--- [BYTEMIND] Config.php localizado en: $CONFIG_FILE ---"
+              echo "--- [INIT] Config.php localizado en: $CONFIG_FILE ---"
 
               if [ -n "$CONFIG_FILE" ]; then
                   # USAMOS CONCATENACIÓN DE COMILLAS PARA EVITAR QUE BASH O TERRAFORM SE COMAN EL $
@@ -81,7 +81,7 @@ resource "aws_launch_template" "moodle_lt" {
                   # VAMOS A POSTPONER ESTO Y PREGUNTAR AL USUARIO.
                   # Pero si quiere VERLO FUNCIONAR, el instalador es la prueba visual más fácil.
                   
-              echo "--- [BYTEMIND] Parches V18 aplicados (Config.php mantenido). ---"
+              echo "--- [INIT] Configuración aplicada exitosamente. ---"
               fi
 
               # 5. Permisos y Estructura Legacy
@@ -97,16 +97,16 @@ resource "aws_launch_template" "moodle_lt" {
               chown www-data:www-data $MOODLE_DATA
               chmod 777 $MOODLE_DATA
               
-              # 6. Purga de Caches (CRITICO)
-              echo "--- [BYTEMIND] Purgando caches nucleares... ---"
+              # 6. Invocación de Purga de Caches (Esencial para evitar corrupción de sesiones distribuidas)
+              echo "--- [INIT] Limpiando directorios temporales y de caché de Moodle... ---"
               rm -rf $MOODLE_DATA/cache/*
               rm -rf $MOODLE_DATA/localcache/*
               rm -rf $MOODLE_DATA/muc/*
               
-              # 7. Reinicio Maestro
-              echo "--- [BYTEMIND] Reiniciando Apache... ---"
+              # 7. Reinicio de servicio para aplicar de forma segura todo el setup
+              echo "--- [INIT] Reiniciando servicio web (Apache2)... ---"
               systemctl restart apache2
-              echo "--- [BYTEMIND FINISH V18] ---"
+              echo "--- [INIT] Bootstrap (Configuración Inicial) completado exitosamente ---"
               EOF
   )
 
@@ -114,12 +114,12 @@ resource "aws_launch_template" "moodle_lt" {
     resource_type = "instance"
     tags = {
       Name        = "${var.project_name}-ASG-Instance"
-      ForceUpdate = "FINAL-RECOVERY-V18-BYPASS"
+      LaunchPhase = "Production-Deployment-V1"
     }
   }
 }
 
-# 2. Grupo de Auto-Escalado (El gestor de la flota)
+# 2. Grupo de Auto-Escalado (Orquestador de Capacidad y Resiliencia)
 resource "aws_autoscaling_group" "moodle_asg" {
   name                = "${var.project_name}-ASG"
   desired_capacity    = 2
@@ -128,7 +128,7 @@ resource "aws_autoscaling_group" "moodle_asg" {
   vpc_zone_identifier = [aws_subnet.public_subnet_a.id, aws_subnet.public_subnet_b.id]
   target_group_arns   = [aws_lb_target_group.alb_tg.arn]
 
-  # Habilitar métricas para CloudWatch (Importante para ver la gráfica de instancias)
+  # Habilitación de métricas de telemetría para AWS CloudWatch
   enabled_metrics = [
     "GroupMinSize",
     "GroupMaxSize",
@@ -142,7 +142,7 @@ resource "aws_autoscaling_group" "moodle_asg" {
     version = "$Latest"
   }
 
-  # ESTRATEGIA DE ROTACIÓN (PHASE 3 - HA)
+  # Configuración de Estrategia de Rotación Continua para Alta Disponibilidad (HA)
   instance_refresh {
     strategy = "Rolling"
     preferences {
@@ -166,13 +166,13 @@ resource "aws_autoscaling_group" "moodle_asg" {
   }
 
   depends_on = [
-    aws_efs_mount_target.efs_mt_a, 
+    aws_efs_mount_target.efs_mt_a,
     aws_efs_mount_target.efs_mt_b,
     aws_db_instance.moodle_db
   ]
 }
 
-# 3. Política de Escalado Dinámico (El "Cerebro")
+# 3. Política de Escalado Dinámico Orientada a Carga de CPU
 resource "aws_autoscaling_policy" "moodle_cpu_policy" {
   name                   = "${var.project_name}-cpu-scaling-policy"
   autoscaling_group_name = aws_autoscaling_group.moodle_asg.name
@@ -182,11 +182,11 @@ resource "aws_autoscaling_policy" "moodle_cpu_policy" {
     predefined_metric_specification {
       predefined_metric_type = "ASGAverageCPUUtilization"
     }
-    target_value = 50.0 # Objetivo: Mantener el CPU al 50%. Si sube, escala.
+    target_value = 50.0 # Umbral Objetivo: Escalar horizontalmente si el uso promedio de CPU excede el 50%
   }
 }
 
-# 4. Política de Escalado por Tráfico (Peticiones al ALB)
+# 4. Política de Escalado Reactivo basado en Nivel de Red (ALB Request Count)
 resource "aws_autoscaling_policy" "moodle_request_policy" {
   name                   = "${var.project_name}-request-scaling-policy"
   autoscaling_group_name = aws_autoscaling_group.moodle_asg.name
@@ -197,6 +197,6 @@ resource "aws_autoscaling_policy" "moodle_request_policy" {
       predefined_metric_type = "ALBRequestCountPerTarget"
       resource_label         = "${aws_lb.app_alb.arn_suffix}/${aws_lb_target_group.alb_tg.arn_suffix}"
     }
-    target_value = 100.0 # Umbral bajo (100 peticiones/min) para poder probarlo fácilmente.
+    target_value = 100.0 # Umbral de tolerancia de peticiones por objetivo (Target) configurado para pruebas
   }
 }

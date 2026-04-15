@@ -34,13 +34,8 @@ resource "aws_security_group" "web_sg" {
     security_groups = [aws_security_group.alb_sg.id]
   }
 
-  # SSH abierto temporalmente (idealmente cerrar o usar VPN)
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  # El puerto 22 (SSH) ha sido cerrado estratégicamente por seguridad (Zero Trust). 
+  # La administración de los servidores se realiza internamente a través de AWS Systems Manager (SSM Session Manager).
 
   egress {
     from_port   = 0
@@ -52,8 +47,8 @@ resource "aws_security_group" "web_sg" {
 
 # 3. Security Group para RDS - Solo desde Web SG
 resource "aws_security_group" "rds_sg" {
-  name        = "${var.project_name}-rds-sg"
-  vpc_id      = aws_vpc.main_vpc.id
+  name   = "${var.project_name}-rds-sg"
+  vpc_id = aws_vpc.main_vpc.id
 
   ingress {
     from_port       = 3306
@@ -65,8 +60,8 @@ resource "aws_security_group" "rds_sg" {
 
 # 4. Security Group para EFS - Solo desde Web SG
 resource "aws_security_group" "efs_sg" {
-  name        = "${var.project_name}-efs-sg"
-  vpc_id      = aws_vpc.main_vpc.id
+  name   = "${var.project_name}-efs-sg"
+  vpc_id = aws_vpc.main_vpc.id
 
   ingress {
     from_port       = 2049

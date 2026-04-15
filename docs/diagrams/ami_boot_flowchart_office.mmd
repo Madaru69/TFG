@@ -1,0 +1,43 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Calibri, sans-serif' }}}%%
+flowchart TD
+    %% --- Fase 1: Creación de la AMI ---
+    subgraph Fase1 ["Fase 1: Creación de la AMI Inmutable (Golden Image)"]
+        direction LR
+        P1(["Inicio: Ejecución del Build"]) --> P2["Despliegue de Instancia<br/>EC2 Base temporal"]
+        P2 --> P3["Actualización del SO base<br/>y dependencias"]
+        P3 --> P4["Instalación del Stack Web<br/>Nginx, PHP-FPM y código Moodle"]
+        P4 --> P5["Limpieza de temporales<br/>y logs del sistema"]
+        P5 --> P6{"Proceso de Captura AWS"}
+        P6 --> P7["Generación de AWS AMI<br/>Golden Image"]
+        P7 --> P8(["Fin de Fase 1:<br/>AMI Disponible"])
+    end
+
+    LinkIn["Terraform actualiza el IaC<br/>con el nuevo AMI ID"]
+    class LinkIn linkbox
+
+    %% --- Fase 2: Arranque Automatizado ---
+    subgraph Fase2 ["<br><br>Fase 2: Arranque Automatizado en Producción"]
+        direction LR
+        T1(["Evento: Señal de Auto Scaling<br/>(Aumento de tráfico o fallo)"]) --> T2["Auto Scaling lanza nueva<br/>instancia (Launch Template)"]
+        T2 --> T3["Post-arranque: Ejecución<br/>de User Data"]
+        T3 --> T4["Montar Sistema de Archivos<br/>AWS EFS en /mnt/efs"]
+        T4 --> T5["Configuración: Inyección de variables<br/>en config.php para RDS"]
+        T5 --> T6["Cambio de permisos de sistema<br/>y arranque del Web Server"]
+        T6 --> T7(["Fin de Fase 2: Nodo Healthy<br/>registrado en el ALB"])
+    end
+
+    %% Usamos los bordes de los subgrafos para no romper el layout horizontal
+    Fase1 -.-> LinkIn
+    LinkIn -.-> Fase2
+
+    %% --- Estilos visuales adaptados a Office ---
+    classDef fase1 fill:#F2F6FB,stroke:#2B579A,stroke-width:2px,color:#000000
+    classDef fase2 fill:#F0F7F2,stroke:#217346,stroke-width:2px,color:#000000
+    classDef startend fill:#FFFFFF,stroke:#D24726,stroke-width:2px,color:#000000,stroke-dasharray: 4 4
+    classDef action fill:#FFFFFF,stroke:#44546A,stroke-width:1px,color:#000000
+    classDef linkbox fill:#EEEEEE,stroke:#A0A0A0,stroke-width:1px,color:#000000
+
+    class Fase1 fase1
+    class Fase2 fase2
+    class P1,P8,T1,T7 startend
+    class P2,P3,P4,P5,P6,P7,T2,T3,T4,T5,T6 action

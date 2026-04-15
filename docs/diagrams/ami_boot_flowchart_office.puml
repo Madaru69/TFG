@@ -1,0 +1,74 @@
+@startuml
+skinparam defaultFontName Calibri
+skinparam padding 4
+skinparam TitleFontSize 16
+skinparam ArrowColor #44546A
+
+skinparam rectangle {
+    BackgroundColor White
+    BorderColor #44546A
+    RoundCorner 10
+}
+skinparam usecase {
+    BackgroundColor White
+    BorderColor #D24726
+    BorderThickness 2
+}
+skinparam hexagon {
+    BackgroundColor White
+    BorderColor #44546A
+    BorderThickness 1
+}
+
+top to bottom direction
+
+rectangle "Fase 1: Creación de la AMI Inmutable (Golden Image)" as Fase1 #F2F6FB;line:2B579A;line.bold {
+    usecase "Inicio: Ejecución del Build" as P1
+    rectangle "Despliegue de Instancia\nEC2 Base temporal" as P2
+    rectangle "Actualización del SO base\ny dependencias" as P3
+    rectangle "Instalación del Stack Web\nNginx, PHP-FPM y código Moodle" as P4
+    rectangle "Limpieza de temporales\ny logs del sistema" as P5
+    hexagon "Proceso de Captura AWS" as P6
+    rectangle "Generación de AWS AMI\nGolden Image" as P7
+    usecase "Fin de Fase 1:\nAMI Disponible" as P8
+    
+    P1 -right-> P2
+    P2 -right-> P3
+    P3 -right-> P4
+    P4 -right-> P5
+    P5 -right-> P6
+    P6 -right-> P7
+    P7 -right-> P8
+}
+
+rectangle "Terraform actualiza el IaC\ncon el nuevo AMI ID" as LinkIn #EEEEEE;line:C0C0C0
+
+rectangle "Fase 2: Arranque Automatizado en Producción" as Fase2 #F0F7F2;line:217346;line.bold {
+    usecase "Evento: Señal de Auto Scaling\n(Aumento de tráfico o fallo)" as T1
+    rectangle "Auto Scaling lanza nueva\ninstancia (Launch Template)" as T2
+    rectangle "Post-arranque: Ejecución\nde User Data" as T3
+    rectangle "Montar Sistema de Archivos\nAWS EFS en /mnt/efs" as T4
+    rectangle "Configuración: Inyección de variables\nen config.php para RDS" as T5
+    rectangle "Cambio de permisos de sistema\ny arranque del Web Server" as T6
+    usecase "Fin de Fase 2: Nodo Healthy\nregistrado en el ALB" as T7
+
+    T1 -right-> T2
+    T2 -right-> T3
+    T3 -right-> T4
+    T4 -right-> T5
+    T5 -right-> T6
+    T6 -right-> T7
+}
+
+' Enlaces ocultos para forzar el apilamiento principal vertical
+Fase1 -[hidden]down-> LinkIn
+LinkIn -[hidden]down-> Fase2
+
+' Este enlace oculto obliga a que Fase 1 y Fase 2 estén alineados por su borde izquierdo!
+P1 -[hidden]down-> T1
+
+' Flechas visuales reales para Terraform
+P8 ..> LinkIn : " "
+LinkIn ..> T2 : " "
+
+@enduml

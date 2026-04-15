@@ -47,8 +47,8 @@ resource "aws_efs_access_point" "moodle_ap" {
   file_system_id = aws_efs_file_system.moodle_efs.id
 
   posix_user {
-    gid = 33 
-    uid = 33 
+    gid = 33
+    uid = 33
   }
 
   root_directory {

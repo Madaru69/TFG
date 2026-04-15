@@ -1,0 +1,17 @@
+﻿Estimate summary
+Upfront cost,Monthly cost,Total 12 months cost,Currency
+0,72.31,867.72,USD
+,,* Includes upfront cost
+
+
+Detailed Estimate
+Group hierarchy,Region,Description,Service,Upfront,Monthly,First 12 months total,Currency,Status,Configuration summary
+My Estimate,Europe (Spain),,Amazon EC2 ,0,16.644,199.73,USD,,"Tenancy (Shared Instances), Operating system (Linux), Workload (Consistent, Number of instances: 2), Advance EC2 instance (t3.micro), Pricing strategy (On-Demand Utilization: 100 %Utilized/Month), Enable monitoring (disabled)"
+My Estimate,Europe (Spain),,Application Load Balancer,0,18.63,223.56,USD,,Number of Application Load Balancers (1)
+My Estimate,Europe (Spain),,Amazon Elastic File System (EFS),0,1.65,19.80,USD,,Desired Storage Capacity (5 GB per month)
+My Estimate,Europe (Spain),,Amazon RDS for MySQL,0,35.39,424.68,USD,,"Storage amount (20 GB), Storage for each RDS instance (General Purpose SSD (gp3)), Nodes (1), Instance type (db.t3.micro), Utilization (On-Demand only) (100 %Utilized/Month), Deployment option (Single-AZ), Pricing strategy (OnDemand)"
+
+
+
+Acknowledgement
+"* AWS Pricing Calculator provides only an estimate of your AWS fees and doesn't include any taxes that might apply. Your actual fees depend on a variety of factors, including your actual usage of AWS services."

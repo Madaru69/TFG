@@ -1,0 +1,38 @@
+flowchart TD
+    %% --- Fase 1: Creacion de la AMI ---
+    subgraph Fase1 ["Fase 1: Creacion de la AMI Inmutable (Golden Image)"]
+        direction TB
+        P1([Inicio: Ejecucion del Build]) --> P2[Despliegue de Instancia EC2 Base temporal]
+        P2 --> P3[Actualizacion del SO base y dependencias]
+        P3 --> P4[Instalacion del Stack Web Nginx, PHP-FPM y codigo Moodle]
+        P4 --> P5[Limpieza de temporales y logs del sistema]
+        P5 --> P6{Proceso de Captura AWS}
+        P6 --> P7[Generacion de AWS AMI 'Golden Image' Moodle]
+        P7 --> P8([Fin de Fase 1: AMI Disponible y Sellada])
+    end
+
+    %% --- Fase 2: Arranque Automatizado ---
+    subgraph Fase2 ["Fase 2: Arranque Automatizado en Produccion (ASG + User Data)"]
+        direction TB
+        T1([Evento: Senal de Auto Scaling Aumento de trafico o fallo de nodo]) --> T2[Auto Scaling Group lanza nueva instancia usando el Launch Template]
+        
+        T2 --> T3[Post-arranque: Ejecucion de Script User Data]
+        T3 --> T4[Montar Sistema de Archivos Compartido AWS EFS en /mnt/efs]
+        T4 --> T5[Configuracion Dinamica: Inyeccion de variables en config.php para conectar a RDS]
+        T5 --> T6[Cambio de permisos del sistema y arranque de servicios Web]
+        T6 --> T7([Fin de Fase 2: Nodo 'Healthy' registrado en el ALB listo para trafico])
+    end
+
+    %% --- Conexion entre Fases ---
+    P8 -.->|Terraform actualiza el codigo IaC con el nuevo AMI ID| T2
+
+    %% --- Estilos visuales ---
+    classDef fase1 fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+    classDef fase2 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000
+    classDef startend fill:#fff3e0,stroke:#e65100,stroke-width:2px,stroke-dasharray: 4 4,color:#000
+    classDef action fill:#ffffff,stroke:#757575,stroke-width:1px,color:#000
+
+    class Fase1 fase1
+    class Fase2 fase2
+    class P1,P8,T1,T7 startend
+    class P2,P3,P4,P5,P6,P7,T2,T3,T4,T5,T6 action

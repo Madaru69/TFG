@@ -1,20 +1,20 @@
 # --- compute.tf (Solo Roles IAM) ---
 
-# Rol para que las EC2 puedan acceder a servicios AWS
+# Rol de IAM que otorga a las instancias EC2 la capacidad de asumir permisos delegados
 resource "aws_iam_role" "ec2_efs_role" {
   name = "${var.project_name}-ec2-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
+      Action    = "sts:AssumeRole"
+      Effect    = "Allow"
       Principal = { Service = "ec2.amazonaws.com" }
     }]
   })
 }
 
-# Permiso para EFS
+# Asociación de Política de Acceso de Lectura/Escritura para Amazon EFS
 resource "aws_iam_role_policy_attachment" "efs_attachment" {
   role       = aws_iam_role.ec2_efs_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonElasticFileSystemClientReadWriteAccess"

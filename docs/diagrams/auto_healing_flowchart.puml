@@ -1,0 +1,44 @@
+@startuml
+skinparam defaultFontName Calibri
+skinparam padding 4
+skinparam ArrowColor #44546A
+
+skinparam rectangle {
+    BackgroundColor White
+    BorderColor #44546A
+    RoundCorner 10
+}
+skinparam usecase {
+    BackgroundColor #FFF0F0
+    BorderColor #D24726
+    BorderThickness 2
+}
+skinparam hexagon {
+    BackgroundColor White
+    BorderColor #D24726
+    BorderThickness 2
+}
+
+top to bottom direction
+
+rectangle "Flujo Crítico de Autorreparación en Alta Disponibilidad" as Main #FAFAFA;line:555555;line.bold {
+    
+    usecase "Fallo Operativo:\nNodo EC2 deja de responder\n(Simulación de fallo)" as H1
+    
+    rectangle "Detección ALB:\nFalla el Health Check\ny corta el tráfico" as H2 #FFF0F0;line:D24726
+    
+    hexagon "Intervención ASG:\nDetecta anomalía y destruye\nla instancia corrupta" as H3
+    
+    rectangle "Recuperación ASG:\nLanza clon exacto basado\nen la Golden AMI" as H4 #F0F7F2;line:217346
+    
+    rectangle "Auto-Configuración:\nUser Data arranca y\nmonta disco de red EFS" as H5 #F0F7F2;line:217346
+    
+    usecase "Reincorporación Exitosa:\nALB valida nodo como 'Healthy'\nsin intervención humana" as H6 #F0F7F2;line:217346
+    
+    H1 -right-> H2
+    H2 -right-> H3
+    H3 -right-> H4
+    H4 -right-> H5
+    H5 -right-> H6
+}
+@enduml
